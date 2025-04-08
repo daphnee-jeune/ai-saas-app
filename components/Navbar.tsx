@@ -42,7 +42,26 @@ const Navbar = () => {
               </button>
             </SignOutButton>
           </SignedIn>
-          <SignedOut></SignedOut>
+          <SignedOut>
+            <Link
+              href="/"
+              className="text-gray-700 hover:text-emerald-500 transition-colors"
+            >
+              Home
+            </Link>
+            <Link
+              href={isSignedIn ? "/subscribe" : "sign-up"}
+              className="text-gray-700 hover:text-emerald-500 transition-colors"
+            >
+              Subscribe
+            </Link>
+            <Link
+              href="sign-up"
+              className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600 transition"
+            >
+              Sign up
+            </Link>
+          </SignedOut>
         </div>
       </div>
     </nav>
