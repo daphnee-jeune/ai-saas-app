@@ -3,7 +3,6 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div className="px-4 py-8 sm:py-12 lg:py-16 max-w-7xl mx-auto">
-      {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-400 to-emerald-600 text-white rounded-lg mb-12 p-8 text-center">
         <h1 className="text-4xl font-bold mb-4">Personalized Meal Plans Suited To Your Needs</h1>
         <p className="text-xl mb-6">
@@ -16,8 +15,6 @@ export default function Home() {
           Get Started
         </Link>
       </section>
-
-      {/* How It Works Section */}
       <section id="how-it-works" className="mb-12">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-semibold">How It Works</h2>
@@ -26,10 +23,8 @@ export default function Home() {
           </p>
         </div>
         <div className="flex flex-col md:flex-row justify-center items-start space-y-8 md:space-y-0 md:space-x-8">
-          {/* Step 1 */}
           <div className="flex flex-col items-center">
             <div className="bg-emerald-500 text-white rounded-full h-16 w-16 flex items-center justify-center mb-4">
-              {/* Icon for Step 1 */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-8 w-8"
@@ -50,11 +45,8 @@ export default function Home() {
               Sign up or sign in to access your personalized meal plans.
             </p>
           </div>
-
-          {/* Step 2 */}
           <div className="flex flex-col items-center">
             <div className="bg-emerald-500 text-white rounded-full h-16 w-16 flex items-center justify-center mb-4">
-              {/* Icon for Step 2 */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-8 w-8"
@@ -82,11 +74,8 @@ export default function Home() {
               plans.
             </p>
           </div>
-
-          {/* Step 3 */}
           <div className="flex flex-col items-center">
             <div className="bg-emerald-500 text-white rounded-full h-16 w-16 flex items-center justify-center mb-4">
-              {/* Icon for Step 3 */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-8 w-8"
