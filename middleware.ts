@@ -5,25 +5,43 @@ const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-up(.*)",
   "/subscribe(.*)",
-  "/api/webhook(.*)"
+  "/api/webhook(.*)",
+  "api/check-subscription(.*)",
 ]);
 
 const isSignUpRoute = createRouteMatcher(["/sign-up(.*)"]);
+
+const isMealplanRoute = createRouteMatcher(["/mealplan(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
   const userAuth = await auth();
   const { userId } = userAuth;
   const { pathname, origin } = req.nextUrl;
-  console.log("middleware", userId, pathname, origin);
-
+  if (pathname === "/api/check-subscription") {
+    return NextResponse.next();
+  }
   if (!isPublicRoute(req) && !userId) {
     return NextResponse.redirect(new URL("/sign-up", origin));
   }
   if (isSignUpRoute(req) && userId) {
     return NextResponse.redirect(new URL("/mealplan", origin));
   }
-
-  return NextResponse.next()
+  if (isMealplanRoute(req) && userId) {
+    // fetch info on subscripton status for current user
+    try {
+      const response = await fetch(
+        `${origin}/api/check-subscription?userId=${userId}`
+      );
+      const data = await response.json();
+      // if fetching fails, redirect users to subscriptions page
+      if (!data.subscriptionActive) {
+        return NextResponse.redirect(new URL("/subscribe", origin));
+      }
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  }
+  return NextResponse.next();
 });
 
 export const config = {
