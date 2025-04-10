@@ -53,6 +53,12 @@ const Subscribe = () => {
       }
       return subscribeToPlan(planType, userId, email);
     },
+    onSuccess: (data) => {
+      window.location.href = data.url
+    },
+    onError: (error) => {
+      console.log(error)
+    },
   });
 
   function handleSubscribe(planType: string) {
