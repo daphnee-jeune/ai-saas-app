@@ -4,7 +4,7 @@ import { availablePlans } from "@/lib/plans";
 import { useUser } from "@clerk/nextjs";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import React from "react";
+import { Toaster, toast } from 'react-hot-toast';
 
 type SubscribeResponse = {
   url: string;
@@ -53,11 +53,15 @@ const Subscribe = () => {
       }
       return subscribeToPlan(planType, userId, email);
     },
+    onMutate: () => {
+      toast.loading("Processing your payment...", { id: "subscribe" })
+    },
     onSuccess: (data) => {
+      toast.success("Redirecting to checkout!", { id: "subscribe" })
       window.location.href = data.url
     },
-    onError: (error) => {
-      console.log(error)
+    onError: () => {
+      toast.error("Oops, something went wrong.", { id: "subscribe" });
     },
   });
 
@@ -70,6 +74,7 @@ const Subscribe = () => {
   }
   return (
     <div className="px-4 py-8 sm:py-12 lg:py-16">
+      <Toaster position="top-center" />
       <div>
         <h2 className="text-3xl font-bold text-center mt-12 sm:text-5xl tracking-tight">
           Pricing
