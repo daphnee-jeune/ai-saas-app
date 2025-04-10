@@ -36,7 +36,7 @@ export const availablePlans: Plan[] = [
     ],
   },
   {
-    name: "Weekly plan",
+    name: "Yearly plan",
     amount: 199.99,
     currency: "USD",
     interval: "year",
