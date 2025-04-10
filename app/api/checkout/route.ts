@@ -27,8 +27,8 @@ export async function POST(request: NextRequest) {
         }
       );
     }
-    const priceID = getPriceIDFromType(planType);
-    if (!priceID) {
+    const priceId = getPriceIDFromType(planType);
+    if (!priceId) {
       return NextResponse.json(
         {
           error: "Invalid price ID",
@@ -42,19 +42,18 @@ export async function POST(request: NextRequest) {
       payment_method_types: ["card"],
       line_items: [
         {
-          price: priceID,
+          price: priceId,
           quantity: 1,
         },
       ],
       customer_email: email,
       mode: "subscription",
       metadata: { clerkUserId: userId, planType },
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/subscribe`,
     });
-
     return NextResponse.json({ url: session.url });
-  } catch (error) {
+  } catch (error: any) {
     return NextResponse.json(
       { "ERROR": error },
       { status: 500 }
