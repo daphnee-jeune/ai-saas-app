@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     try {
       parsedMealPlan = JSON.parse(aiContent);
     } catch (parsedError) {
-      console.error(parsedError);
+      console.error("Error parsing AI response as JSON", parsedError);
       return NextResponse.json(
         { error: "Error failed to parse meal plan. Try again.", parsedError },
         { status: 500 }

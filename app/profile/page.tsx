@@ -1,10 +1,10 @@
 "use client";
-
+import { useState } from "react";
 import Spinner from "@/components/Spinner";
 import { useUser } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
 import Image from "next/image";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { availablePlans } from "@/lib/plans";
 
 async function fetchSubscriptionStatus() {
@@ -12,7 +12,19 @@ async function fetchSubscriptionStatus() {
   return response.json();
 }
 
+async function updatePlan(newPlan: string) {
+  const response = await fetch("/api/profile/change-plan", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ newPlan }),
+  });
+  return response.json();
+}
+
 const Profile = () => {
+  const [selectedPlan, setSelectedPlan] = useState("");
   const { isLoaded, isSignedIn, user } = useUser();
   const {
     data: subscription,
@@ -24,6 +36,14 @@ const Profile = () => {
     queryFn: fetchSubscriptionStatus,
     enabled: isLoaded && isSignedIn,
     staleTime: 5 * 60 * 1000, // refetch if nothing is done after 5mns
+  });
+
+  const {
+    data: updatedPlan,
+    mutate: updatedPlanMutation,
+    isPending: isUpdatePlanPending,
+  } = useMutation({
+    mutationFn: updatePlan,
   });
 
   const currentPlan = availablePlans.find(
@@ -40,6 +60,13 @@ const Profile = () => {
   if (!isSignedIn) {
     return <div>Please sign in to view your profile</div>;
   }
+
+  const handleUpdatePlan = () => {
+    if (selectedPlan) {
+      updatedPlanMutation(selectedPlan);
+    }
+    setSelectedPlan("");
+  };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <Toaster position="top-center" />
@@ -104,16 +131,26 @@ const Profile = () => {
           <div>
             <h3>Change Subsription Plan</h3>
             {currentPlan && (
-              <select defaultValue={currentPlan?.interval}>
-                <option value="" disabled>
-                  Select a new plan
-                </option>
-                {availablePlans.map((plan, key) => (
-                  <option key={key} value={plan.interval}>
-                    {plan.name} - ${plan.amount} / {plan.interval}
+              <>
+                <select
+                  defaultValue={currentPlan?.interval}
+                  disabled={isUpdatePlanPending}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                    setSelectedPlan(e.target.value)
+                  }
+                >
+                  <option value="" disabled>
+                    Select a new plan
                   </option>
-                ))}
-              </select>
+                  {availablePlans.map((plan, key) => (
+                    <option key={key} value={plan.interval}>
+                      {plan.name} - ${plan.amount} / {plan.interval}
+                    </option>
+                  ))}
+                </select>
+                <button onClick={handleUpdatePlan}>Save changes</button>
+                {isUpdatePlanPending && <p>Updating your plan...</p>}
+              </>
             )}
           </div>
         </div>
