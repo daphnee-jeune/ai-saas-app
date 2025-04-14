@@ -41,7 +41,7 @@ const Profile = () => {
     return <div>Please sign in to view your profile</div>;
   }
   return (
-    <div className="min-h-screen flex items-center justify-center bg-emerald-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <Toaster position="top-center" />
       <div className="w-full max-w-5xl bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="flex flex-col md:flex-row">
