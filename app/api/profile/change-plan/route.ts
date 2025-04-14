@@ -1,10 +1,10 @@
-import { currentUser } from "@clerk/nextjs/server";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import { currentUser } from "@clerk/nextjs/server";
 import { getPriceIDFromType } from "@/lib/plans";
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const clerkUser = await currentUser();
     if (!clerkUser?.id) {
@@ -12,38 +12,37 @@ export async function POST(request: NextRequest) {
     }
 
     const { newPlan } = await request.json();
-
     if (!newPlan) {
-      return NextResponse.json({ error: "New plan is required" });
+      return NextResponse.json(
+        { error: "New plan is required." },
+        { status: 400 }
+      );
     }
-
+    // fetch existing subscription
     const profile = await prisma.profile.findUnique({
       where: { userId: clerkUser.id },
     });
-    if (!profile) {
-      return NextResponse.json({ error: "No profile found" });
-    }
-
-    if (!profile.stripeSubscriptionId) {
-      return NextResponse.json({ error: "No active subscription found" });
+    if (!profile?.stripeSubscriptionId) {
+      throw new Error("No active subscription found.");
     }
 
     const subscriptionId = profile.stripeSubscriptionId;
 
-    // retrieve sub using stripe
+    // retrieve the subscription from Stripe
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
     const subscriptionItemId = subscription.items.data[0]?.id;
-
     if (!subscriptionItemId) {
-      return NextResponse.json({ error: "No active subscription found" });
+      throw new Error("Subscription item not found.");
     }
+
+    // update subscription in Stripe
     const updatedSubscription = await stripe.subscriptions.update(
       subscriptionId,
       {
         cancel_at_period_end: false,
         items: [
           {
-            id: subscriptionId,
+            id: subscriptionItemId,
             price: getPriceIDFromType(newPlan),
           },
         ],
@@ -51,6 +50,7 @@ export async function POST(request: NextRequest) {
       }
     );
 
+    // update db
     await prisma.profile.update({
       where: { userId: clerkUser.id },
       data: {
@@ -62,8 +62,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ subscription: updatedSubscription });
   } catch (error: any) {
+    console.error("Error changing subscription plan:", error);
     return NextResponse.json(
-      { error: "Failed to fetch subscription details." },
+      { error: error.message || "Failed to change subscription plan." },
       { status: 500 }
     );
   }

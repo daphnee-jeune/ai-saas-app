@@ -1,6 +1,6 @@
-import { currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { currentUser } from "@clerk/nextjs/server";
 
 export async function GET() {
   try {
@@ -8,15 +8,16 @@ export async function GET() {
     if (!clerkUser?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
+    // fetch user profile via Prisma
     const profile = await prisma.profile.findUnique({
       where: { userId: clerkUser.id },
     });
     if (!profile) {
-      return NextResponse.json({ error: "No profile found" });
+      return NextResponse.json({ subscription: null });
     }
     return NextResponse.json({ subscription: profile });
   } catch (error: any) {
+    console.error("Error fetching subscription:", error);
     return NextResponse.json(
       { error: "Failed to fetch subscription details." },
       { status: 500 }
