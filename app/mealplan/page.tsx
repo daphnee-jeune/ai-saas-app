@@ -1,4 +1,5 @@
 "use client";
+import { useMutation } from "@tanstack/react-query";
 import React from "react";
 
 interface MealPlanInput {
@@ -10,7 +11,37 @@ interface MealPlanInput {
   days?: number;
 }
 
+interface DailyMealPlan {
+  Breakfast?: string;
+  Lunch?: string;
+  Dinner?: string;
+  Snacks?: string;
+}
+
+interface WeeklyMealPlan {
+  [day: string]: DailyMealPlan;
+}
+
+interface MealPlanResponse {
+  mealPlan?: WeeklyMealPlan;
+  error?: string;
+}
+
+const generateMealPlan = async (payload: MealPlanInput) => {
+  const response = await fetch("/api/generate-mealplan", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+  return response.json();
+};
 const MealPlanDashboard = () => {
+  const { mutate, isPending, data } = useMutation<MealPlanResponse, Error, MealPlanInput>({
+    mutationFn: generateMealPlan
+  });
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -23,8 +54,11 @@ const MealPlanDashboard = () => {
       snacks: Boolean(formData.get("snacks")) ?? false,
       days: 7,
     };
-    console.log(payload);
+    mutate(payload)
   };
+  if(data){
+    console.log(data)
+  }
   return (
     <div className="min-h-screen flex items-center justify-center  p-4">
       {/* Left side */}
@@ -111,9 +145,10 @@ const MealPlanDashboard = () => {
             <div>
               <button
                 type="submit"
+                disabled={isPending}
                 className="w-full bg-emerald-500 text-white py-2 px-4 rounded-md hover:bg-emerald-600 transition-colors"
               >
-                Generate My Menu
+                {isPending ? "Generating..." : "Generate My Menu"}
               </button>
             </div>
           </form>

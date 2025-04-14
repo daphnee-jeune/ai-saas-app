@@ -1,17 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
-const openAI = new OpenAI({
-  apiKey: process.env.OPEN_ROUTER_API_KEY,
+interface DailyMealPlan {
+ Breakfast?: string;
+ Lunch?: string;
+ Dinner?: string;
+ Snacks?: string;
+}
+
+const openai = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
+  apiKey: process.env.OPEN_ROUTER_API_KEY,
 });
 
-export async function Post(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const { dietType, calories, allergies, cuisine, snacks, days } =
       await request.json();
 
-      const prompt = `
+    const prompt = `
       You are a professional nutritionist. Create a $${days}-day meal plan for an individual following a ${dietType} diet aiming for ${calories} calories per day.
       
       Allergies or restrictions: ${allergies || "none"}.
@@ -47,6 +54,38 @@ export async function Post(request: NextRequest) {
       Return just the json with no extra commentaries and no backticks.
     `;
 
+    const response = await openai.chat.completions.create({
+      model: "meta-llama/llama-3.2-3b-instruct:free",
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      temperature: 0.7,
+      max_tokens: 1500,
+    });
+
+    const aiContent = response.choices[0].message.content!.trim();
+    let parsedMealPlan: { [day: string]: DailyMealPlan };
+    // specifically catch parsing error of returned data
+    try {
+      parsedMealPlan = JSON.parse(aiContent);
+    } catch (parsedError) {
+      console.error(parsedError);
+      return NextResponse.json(
+        { error: "Error failed to parse meal plan. Try again." },
+        { status: 500 }
+      );
+    }
+
+    if (typeof parsedMealPlan !== "object" || parsedMealPlan === null) {
+      return NextResponse.json(
+        { parsedError: "Error failed to parse meal plan. Try again." },
+        { status: 500 }
+      );
+    }
+    return NextResponse.json({ mealplan: parsedMealPlan });
   } catch (error: any) {
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
