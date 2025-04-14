@@ -24,7 +24,7 @@ async function updatePlan(newPlan: string) {
 }
 
 const Profile = () => {
-  const [selectedPlan, setSelectedPlan] = useState("");
+  const [selectedPlan, setSelectedPlan] = useState("")
   const { isLoaded, isSignedIn, user } = useUser();
   const {
     data: subscription,
@@ -62,10 +62,10 @@ const Profile = () => {
   }
 
   const handleUpdatePlan = () => {
-    if (selectedPlan) {
-      updatedPlanMutation(selectedPlan);
+    if(selectedPlan){
+      updatedPlanMutation(selectedPlan)
     }
-    setSelectedPlan("");
+    setSelectedPlan("")
   };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
@@ -128,16 +128,15 @@ const Profile = () => {
               <p>You aren't subscribed to any plan</p>
             )}
           </div>
-          <div>
-            <h3>Change Subsription Plan</h3>
-            {currentPlan && (
+          <div className="bg-white shadow-md rounded-lg p-4 border border-emerald-200">
+            <h3 className="text-xl font-semibold mb-2 text-emerald-600">Change Subsription Plan</h3>
+            
               <>
                 <select
                   defaultValue={currentPlan?.interval}
                   disabled={isUpdatePlanPending}
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                    setSelectedPlan(e.target.value)
-                  }
+                  className="w-full px-3 py-2 border border-emerald-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedPlan(e.target.value)}
                 >
                   <option value="" disabled>
                     Select a new plan
@@ -148,10 +147,10 @@ const Profile = () => {
                     </option>
                   ))}
                 </select>
-                <button onClick={handleUpdatePlan}>Save changes</button>
+                <button onClick={handleUpdatePlan} className="mt-3 p-2 bg-emerald-500 rounded-lg text-white">Save changes</button>
                 {isUpdatePlanPending && <p>Updating your plan...</p>}
               </>
-            )}
+            
           </div>
         </div>
       </div>
