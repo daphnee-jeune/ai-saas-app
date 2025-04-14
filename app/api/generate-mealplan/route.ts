@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
+import { OpenAI } from "openai";
 
 interface DailyMealPlan {
- Breakfast?: string;
- Lunch?: string;
- Dinner?: string;
- Snacks?: string;
+  Breakfast?: string;
+  Lunch?: string;
+  Dinner?: string;
+  Snacks?: string;
 }
 
 const openai = new OpenAI({
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     } catch (parsedError) {
       console.error(parsedError);
       return NextResponse.json(
-        { error: "Error failed to parse meal plan. Try again." },
+        { error: "Error failed to parse meal plan. Try again.", parsedError },
         { status: 500 }
       );
     }
