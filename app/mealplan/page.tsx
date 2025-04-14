@@ -118,8 +118,11 @@ const MealPlanDashboard = () => {
             </div>
           </form>
         </div>
-        <div>
-          <h2>Weekly Menu</h2>
+        {/* Right side */}
+        <div className="w-full md:w-2/3 lg:w-3/4 p-6 bg-gray-50">
+          <h2 className="text-2xl font-bold mb-6 text-emerald-700">
+            Weekly Menu
+          </h2>
         </div>
       </div>
     </div>
