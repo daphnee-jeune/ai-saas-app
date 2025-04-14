@@ -101,6 +101,21 @@ const Profile = () => {
               <p>You aren't subscribed to any plan</p>
             )}
           </div>
+          <div>
+            <h3>Change Subsription Plan</h3>
+            {currentPlan && (
+              <select defaultValue={currentPlan?.interval}>
+                <option value="" disabled>
+                  Select a new plan
+                </option>
+                {availablePlans.map((plan, key) => (
+                  <option key={key} value={plan.interval}>
+                    {plan.name} - ${plan.amount} / {plan.interval}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
         </div>
       </div>
     </div>
