@@ -18,9 +18,9 @@ const MealPlanDashboard = () => {
     const payload: MealPlanInput = {
       dietType: formData.get("dietType")?.toString() ?? "",
       calories: Number(formData.get("calories")) ?? 2000,
-      allergies: formData.get("allergies")?.toString() || "",
-      cuisine: formData.get("cuisine")?.toString() || "",
-      snacks: Boolean(formData.get("snacks")) || false,
+      allergies: formData.get("allergies")?.toString() ?? "",
+      cuisine: formData.get("cuisine")?.toString() ?? "",
+      snacks: Boolean(formData.get("snacks")) ?? false,
       days: 7,
     };
     console.log(payload);
