@@ -23,7 +23,7 @@ export const availablePlans: Plan[] = [
   },
   {
     name: "Monthly plan",
-    amount: 19.99,
+    amount: 29.99,
     currency: "USD",
     interval: "month",
     isPopular: true,
