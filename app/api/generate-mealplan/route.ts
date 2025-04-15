@@ -1,5 +1,3 @@
-// app/api/generate-mealplan/route.ts
-
 import { NextResponse } from "next/server";
 import { OpenAI } from "openai";
 
@@ -50,7 +48,7 @@ export async function POST(request: Request) {
       Return just the json with no extra commentaries and no backticks.
     `;
 
-    // Send the prompt to the AI model
+    // prompt for ai model
     const response = await openai.chat.completions.create({
       model: "meta-llama/llama-3.2-3b-instruct:free",
       messages: [
@@ -79,11 +77,9 @@ export async function POST(request: Request) {
       );
     }
 
-
     if (typeof parsedMealPlan !== "object" || parsedMealPlan === null) {
       throw new Error("Invalid meal plan format received from AI.");
     }
-
     return NextResponse.json({ mealPlan: parsedMealPlan });
   } catch (error) {
     console.error("Error generating meal plan:", error);
